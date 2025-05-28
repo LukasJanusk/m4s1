@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+@theme {
+  --color-discord-blurple: oklch(0.6 0.14 264);
+  --font-logo: 'Ginto Nord', sans-serif;
+}

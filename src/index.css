@@ -2,4 +2,19 @@
 @theme {
   --color-discord-blurple: oklch(0.6 0.14 264);
   --font-logo: 'Ginto Nord', sans-serif;
+  --color-discord-black: #1e1f22;
+  --color-discord-blurple: #5865f2;
+  --color-discord-dark: #2c2f33;
+  --color-discord-mid-dark: #282b2f;
+  --color-discord-darker: #23272a;
+  --color-discord-light: #7289da;
+  --color-discord-green: #57f287;
+  --color-discord-yellow: #fee75c;
+  --color-discord-darker-red: #ed424522;
+  --color-discord-dark-red: #ed424533;
+  --color-discord-red: #ed4245;
+  --color-discord-white: #ffffff;
+  --color-discord-gray: #99aab5;
+  --color-discord-dark-gray: #3a3d41;
+  --color-discord-light-gray: #b9bbbe;
 }

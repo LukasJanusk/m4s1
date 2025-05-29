@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react';
 import { socket } from '@/libs/socket';
+import Sidebar from './Sidebar';
+import Headbar from './HeadBar';
+import Chatroom from './Chatroom';
+import { Settings } from '@/types';
 
 function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
+  const [settings, setSettings] = useState<Settings>({
+    microphoneOn: true,
+    headphonesOn: true,
+  });
   const handleSocketConnect = () =>
     isConnected ? socket.disconnect() : socket.connect();
 
@@ -24,18 +32,11 @@ function App() {
 
   return (
     <div>
-      <p className="text-4xl font-bold">
-        Connected: {isConnected ? 'Yes' : 'No'}
-      </p>
-      <div className="bg-discord-blurple text-black p-4 rounded">
-        Discord Theme Example
+      <Headbar name={'Corddis'} logo="src/assets/discord-logo.png"></Headbar>
+      <div className="flex">
+        <Sidebar settings={settings} setSettings={setSettings}></Sidebar>
+        <Chatroom></Chatroom>
       </div>
-      <button
-        className="text-2xl border-2 font-bold bg-amber-100 hover:bg-amber-200 rounded-md p-2"
-        onClick={handleSocketConnect}
-      >
-        {isConnected ? 'Disconnect' : 'Connect'}
-      </button>
     </div>
   );
 }

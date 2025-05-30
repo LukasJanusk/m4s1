@@ -1,10 +1,43 @@
+import { Settings } from '@/types';
 import Comment from './Comment';
+import Bars from '@/assets/bars.svg?react';
+import { Channel } from 'server/channels';
 
-export default function Chatroom() {
+interface Props {
+  isConnected: boolean;
+  channel: Channel;
+  settings: Settings;
+  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
+}
+
+export default function Chatroom({
+  isConnected,
+  settings,
+  setSettings,
+}: Props) {
+  const handleCommentSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  };
   return (
     <div className="bg-discord-darker flex-[3] h-[calc(100vh-2rem)] text-discord-gray border-t-1 border-discord-dark flex flex-col">
       <div className="border-discord-dark border-b-1 max-w-full min-h-8 ml-4">
-        # ChatRoom header
+        <div className="flex flex-row gap-2 items-center align-middle">
+          {settings.isMobile && (
+            <Bars
+              onClick={() =>
+                setSettings({
+                  ...settings,
+                  sidebarOpen: !settings.sidebarOpen,
+                })
+              }
+              className="h-6 w-6 fill-current text-discord-white hover:text-discord-gray"
+            />
+          )}
+          <span className="text-discord-white">
+            <span className="text-2xl text-discord-gray">#</span> ChatRoom
+            header
+          </span>
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto p-2">
         {' '}
@@ -15,7 +48,10 @@ export default function Chatroom() {
           </Comment>
         ))}
       </div>
-      <form className="relative bg-discord-dark border border-discord-dark rounded-2xl p-2 m-4 min-h-20 flex items-center">
+      <form
+        onSubmit={handleCommentSubmit}
+        className="relative bg-discord-dark border border-discord-dark rounded-2xl p-2 m-4 min-h-20 flex items-center"
+      >
         <textarea
           className="bg-transparent w-full text-white outline-none focus:outline-none focus:ring-0 pr-10 resize-none overflow-y-auto"
           rows={3}

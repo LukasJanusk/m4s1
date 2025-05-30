@@ -53,7 +53,7 @@ io.use((socket: CustomSocket, next: (err?: ExtendedError) => void) => {
 
     const username =
       socket.handshake.auth.username || `anonymous_${generateRandomId(2)}`;
-
+    console.log(username);
     socket.sessionId = generateRandomId();
     socket.userId = generateRandomId();
     socket.username = username;

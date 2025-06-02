@@ -1,101 +1,48 @@
-import { Settings } from '@/types';
-import Widgets from './Widgets';
-import { useEffect, useRef, useState } from 'react';
-import LoginForm from './LoginForm';
-import Close from '@/assets/close.svg?react';
-
 interface Props {
   isConnected: boolean;
-  settings: Settings;
-  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
-  handleLogin: (username: string) => void;
-  handleLogout: () => void;
+  avatar: string | undefined;
+  showStatus: boolean;
+  showIndicator: boolean;
+  showName: boolean;
+  name: string | undefined;
 }
+
 export default function Avatar({
   isConnected,
-  settings,
-  setSettings,
-  handleLogin,
-  handleLogout,
+  avatar,
+  name,
+  showStatus = false,
+  showIndicator = false,
+  showName = false,
 }: Props) {
   const status = () => {
     return isConnected ? 'bg-discord-green' : 'bg-discord-gray';
   };
-  const [modalOpen, setModalOpen] = useState(false);
-  const login = (username: string) => () => {
-    setModalOpen(false);
-    handleLogin(username);
-  };
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        setModalOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
   return (
-    <div className="flex w-full">
-      {modalOpen &&
-        (isConnected ? (
+    <div className="relative min-h-10 h-10 min-w-10 w-10 shrink-0">
+      <div>
+        {` `}
+        <img
+          className="w-full h-full rounded-full"
+          src={avatar || 'src/assets/avatar-default.png'}
+          alt="avatar"
+        ></img>
+        {showIndicator && (
           <div
-            ref={modalRef}
-            className=" flex flex-col absolute left-2 bottom-24  bg-discord-dark border-1  border-discord-dark-gray rounded-2xl h-fit w-fit z-1 items-center justify-center gap-2 p-2"
-          >
-            <Close
-              className="h-5 w-5 absolute right-2 top-2 text-discrd-dark-gray fill-current hover:text-discord-red"
-              onClick={() => setModalOpen(() => false)}
-            ></Close>
-            <div className="mt-4 p-2">
-              Logged in settings and options placeholder
-            </div>
-            <button
-              onClick={handleLogout}
-              className={` w-full mb-2 bg-discord-dark-red rounded-xl p-2  border-2  border-discord-darker-red hover:border-discord-red transform-border duration-200`}
-            >
-              Logout
-            </button>
-          </div>
-        ) : (
-          <div
-            ref={modalRef}
-            className={`absolute left-2 bottom-24 bg-discord-dark border-1 border-discord-dark-gray rounded-2xl h-fit w-fit z-1`}
-          >
-            <Close
-              className="h-5 w-5 absolute right-2 top-2 text-discrd-dark-gray fill-current hover:text-discord-red"
-              onClick={() => setModalOpen(() => false)}
-            ></Close>
-            <LoginForm onSubmit={login}></LoginForm>
-          </div>
-        ))}
-      <div
-        onClick={() => {
-          setModalOpen(prev => !prev);
-        }}
-        className="hover:bg-discord-dark flex-[2] rounded ml-2 rounded-l-full p-1"
-      >
-        <div className="relative max-h-10 max-w-10">
-          <div>
-            {` `}
-            <img
-              className="w-full h-full rounded-full"
-              src="src/assets/avatar-default.png"
-              alt="avatar"
-            ></img>
-            <div
-              className={`absolute bottom-0 right-[-3px] ${status()} border-2 border-discord-darker h-4 w-4 rounded-full`}
-            ></div>
-            <span className="absolute bottom-0 left-12 text-discord-gray text-sm">
-              {isConnected ? 'Online' : 'Offline'}
-            </span>
-          </div>
-        </div>
+            className={`absolute bottom-0 right-[-3px] ${status()} border-2 border-discord-darker h-4 w-4 rounded-full`}
+          ></div>
+        )}
+        {showName && name && (
+          <span className="text-discord-white absolute bottom-4 left-12 text-nowrap">
+            {name.length < 18 ? name : `${name.slice(0, 15)}...`}
+          </span>
+        )}
+        {showStatus && (
+          <span className="absolute bottom-0 left-12 text-discord-gray text-sm">
+            {isConnected ? 'Online' : 'Offline'}
+          </span>
+        )}
       </div>
-      <Widgets settings={settings} setSettings={setSettings}></Widgets>
     </div>
   );
 }

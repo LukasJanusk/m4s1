@@ -1,26 +1,29 @@
 import type { Channel } from 'server/channels';
-import Avatar from './Avatar';
+import SideBarControlls from './SidebarControlls';
 import { Settings } from '@/types';
 import ServerToggle from './ServerToggle';
+import { Session } from 'server/sessions';
 
 interface Props {
+  user: Session;
   channels: Channel[];
   settings: Settings;
   isConnected: boolean;
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
-  handleLogin: (username: string) => void;
   handleLogout: () => void;
+  handleChannelSelect: (index: number) => void;
 }
 
 export default function Sidebar({
+  user,
   channels,
   settings,
   setSettings,
   isConnected,
-  handleLogin,
+
   handleLogout,
+  handleChannelSelect,
 }: Props) {
-  // const handleChannelSelect = index => {};
   return (
     <div className="text-discord-white left-0 top-0 bg-discord-black min-w-96 h-[calc(100vh-2rem)] flex flex-col flex-[1]">
       <div className="flex min h-full">
@@ -31,15 +34,12 @@ export default function Sidebar({
           {isConnected && (
             <div>
               <div className="flex flex-col self-start border-b-1 border-discord-dark min-h-8">
-                <select className="pl-2 pt-2 pr-2">
-                  <option>Option1</option>
-                  <option>Option2</option>
-                  <option>Option3</option>
-                  <option>Option4</option>
-                </select>
+                <div className="pl-2 pt-2 pr-2">
+                  <span>Channel options placeholder</span>
+                </div>
               </div>
               {channels.map((c, index) => (
-                <div key={index}>
+                <div key={index} onClick={() => handleChannelSelect(index)}>
                   <span className="text-discord-gray text-2xl pl-2 pr-2">
                     {' '}
                     #
@@ -52,13 +52,13 @@ export default function Sidebar({
         </div>
       </div>
       <div className="bg-discord-darker min-h-20 border-1 border-discord-dark rounded-2xl m-2 flex items-center">
-        <Avatar
+        <SideBarControlls
+          user={user}
           isConnected={isConnected}
           settings={settings}
           setSettings={setSettings}
-          handleLogin={handleLogin}
           handleLogout={handleLogout}
-        ></Avatar>
+        ></SideBarControlls>
       </div>
     </div>
   );

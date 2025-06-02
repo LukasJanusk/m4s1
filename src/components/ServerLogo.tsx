@@ -1,5 +1,4 @@
 import logo from '@/assets/discrod-server-logo.svg?url';
-import { useState } from 'react';
 
 interface Props {
   imgUrl?: string;
@@ -7,18 +6,13 @@ interface Props {
 }
 
 export default function ServerLogo({ imgUrl, unread }: Props) {
-  const defaultUrl = new URL(
-    '@/assets/discord-server-logo.svg',
-    import.meta.url
-  ).href;
-  console.log(defaultUrl);
   return (
     <div className="relative h-full aspect-square ">
       <div className=" bg-discord-darker rounded-xl text-center hover:bg-discord-blurple transition-all duration-150">
         {imgUrl ? (
           <img
             src={imgUrl}
-            className="w-full h-full text-sm p-2.5"
+            className="w-full h-full min-w-8 min-h-8 text-sm p-2.5"
             alt="logo"
           />
         ) : (

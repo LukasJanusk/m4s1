@@ -1,14 +1,31 @@
+import { useState } from 'react';
+
 interface Props {
-  onSubmit: (username: string) => () => void;
+  onSubmit: (username: string, avatar: string) => void;
 }
 
 export default function LoginForm({ onSubmit }: Props) {
+  const avatars = [
+    new URL('@/assets/chicken.png', import.meta.url).href,
+    new URL('@/assets/gamer.png', import.meta.url).href,
+    new URL('@/assets/girl.png', import.meta.url).href,
+    new URL('@/assets/man.png', import.meta.url).href,
+    new URL('@/assets/meerkat.png', import.meta.url).href,
+    new URL('@/assets/panda.png', import.meta.url).href,
+    new URL('@/assets/rabbit.png', import.meta.url).href,
+    new URL('@/assets/woman.png', import.meta.url).href,
+  ];
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit((e.target as HTMLFormElement).username.value)();
+    if (index !== null)
+      onSubmit((e.target as HTMLFormElement).username.value, avatars[index]);
+  };
+  const [index, setIndex] = useState<number | null>(null);
+  const handleAvatarSelect = (index: number) => {
+    setIndex(index);
   };
   return (
-    <div>
+    <div className="max-w-md">
       <form onSubmit={handleSubmit} className="flex flex-col text-center m-2">
         <label htmlFor="username">Username</label>
         <input
@@ -17,13 +34,24 @@ export default function LoginForm({ onSubmit }: Props) {
           type="text"
           required
         ></input>
-        <label htmlFor="password">Password</label>
-        <input
-          className="bg-discord-dark text-white border border-discord-gray rounded-md p-1 m-2 focus:outline-none focus:ring-2 focus:ring-discord-blurple"
-          id="password"
-          type="text"
-          required
-        ></input>
+
+        <div>
+          {' '}
+          <h2 className="mb-4">Pick your Avatar</h2>
+          <div className="flex flex-wrap flex-row justify-center items-center">
+            {avatars.map((a, i) => (
+              <button
+                className={`rounded-full border-4 ${index === i ? 'border-discord-green' : 'border-discord-dark'}`}
+                type="button"
+                key={i}
+                onClick={() => handleAvatarSelect(i)}
+              >
+                <img className="w-16 h-16 rounded-full" src={a}></img>
+              </button>
+            ))}
+          </div>
+        </div>
+
         <button
           type="submit"
           className="bg-discord-blurple border-2 border-discord-light w-auto h-10 rounded-xl m-2 hover:border-discord-green transform-border duration-200"

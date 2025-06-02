@@ -26,6 +26,7 @@ export default {
           userId: session.userId,
           username: session.username,
           connected: session.connected,
+          avatar: session.avatar,
         };
       });
     }
@@ -49,7 +50,9 @@ export default {
   },
 };
 export type Session = {
+  sessionId: string;
   userId: string;
   username: string;
   connected: boolean;
+  avatar: string;
 };

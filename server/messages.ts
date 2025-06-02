@@ -7,7 +7,8 @@ export default {
       id: generateRandomId(),
       userId: session.userId,
       username: session.username,
-      message,
+      message: message,
+      timestamp: new Date().toISOString(),
     };
   },
 };
@@ -17,4 +18,5 @@ export type Message = {
   userId: string;
   username: string;
   message: string;
+  timestamp: string;
 };

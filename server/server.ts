@@ -11,6 +11,7 @@ interface CustomSocket extends Socket {
   sessionId?: string;
   userId?: string;
   username?: string;
+  avatar?: string;
 }
 const app = express();
 
@@ -45,6 +46,7 @@ io.use((socket: CustomSocket, next: (err?: ExtendedError) => void) => {
         socket.sessionId = sessionId;
         socket.userId = session.userId;
         socket.username = session.username;
+        socket.avatar = session.avatar;
 
         next();
         return;
@@ -53,10 +55,13 @@ io.use((socket: CustomSocket, next: (err?: ExtendedError) => void) => {
 
     const username =
       socket.handshake.auth.username || `anonymous_${generateRandomId(2)}`;
+    const avatar =
+      socket.handshake.auth.avatar || 'src/assets/avatar-default.png';
     console.log(username);
     socket.sessionId = generateRandomId();
     socket.userId = generateRandomId();
     socket.username = username;
+    socket.avatar = avatar;
 
     next();
   })().catch(next);
@@ -69,6 +74,7 @@ io.on('connection', (socket: CustomSocket) => {
     sessionId: socket.sessionId!,
     userId: socket.userId!,
     username: socket.username!,
+    avatar: socket.avatar!,
     connected: true,
   };
   console.log('Session connected: ' + currentSession.sessionId);
@@ -84,17 +90,20 @@ io.on('connection', (socket: CustomSocket) => {
     socket.in(WELCOME_CHANNEL).emit('user:join', {
       userId: currentSession.userId,
       username: currentSession.username,
+      avatar: currentSession.avatar,
       connected: true,
     });
   }
 
   socket.emit('channels', channels);
-  socket.emit('users', sessions.getAllUsers());
-
+  const users = sessions.getAllUsers();
+  socket.emit('users', users);
+  socket.broadcast.emit('users', users);
   socket.on('user:leave', () => {
     socket.in(WELCOME_CHANNEL).emit('user:leave', {
       userId: currentSession.userId,
       username: currentSession.username,
+      avatar: currentSession.avatar,
       connected: false,
     });
 
@@ -102,7 +111,7 @@ io.on('connection', (socket: CustomSocket) => {
     socket.disconnect();
   });
 
-  socket.on('message:channel:send', (channel, message) => {
+  socket.on('message:channel:send', (channel: string, message: string) => {
     const registeredChannel = channels.find(it => it.name === channel);
 
     if (!registeredChannel) return;
@@ -128,6 +137,7 @@ io.on('connection', (socket: CustomSocket) => {
     socket.broadcast.emit('user:disconnect', {
       userId: session.userId,
       username: session.username,
+      avatar: session.avatar,
       connected: false,
     });
   });

@@ -1,9 +1,9 @@
 import { Settings } from '@/types';
-import { useState } from 'react';
-import MicrophoneOff from '@/assets/microphone-off.svg?react';
-import MicrophoneOn from '@/assets/microphone.svg?react';
-import HeadphonesOff from '@/assets/headphones-off.svg?react';
-import Headphones from '@/assets/headphones.svg?react';
+import { useState, useEffect, useRef } from 'react';
+import Gear from '@/assets/gear.svg?url';
+import CloseButton from './CloseButton';
+import MircophoneToggle from './MicrophoneToggle';
+import HeadphonesToggle from './HeadphonesToggle';
 
 interface Props {
   settings: Settings;
@@ -11,6 +11,7 @@ interface Props {
 }
 
 export default function Widgets({ settings, setSettings }: Props) {
+  const [optionsOpen, setOptionsOpen] = useState(false);
   const setHeadphonesOn = () =>
     setSettings((prev: Settings) => ({
       ...prev,
@@ -21,48 +22,45 @@ export default function Widgets({ settings, setSettings }: Props) {
       ...prev,
       microphoneOn: !prev.microphoneOn,
     }));
-  const [optionsOpen, setOptionsOpen] = useState(true);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setOptionsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <div className="flex-[1] flex flex-row justify-center items-center gap-2 mr-2 ">
-      {settings.headphonesOn ? (
-        <div className="rounded-md hover:bg-discord-dark">
-          <Headphones
-            className={`h-7 w-7 p-1 transition-transform duration-500 hover:rotate-15
-                 fill-current text-discord-gray`}
-            onClick={setHeadphonesOn}
-          />
-        </div>
-      ) : (
-        <div className="rounded-md bg-discord-darker-red hover:bg-discord-dark-red">
-          <HeadphonesOff
-            onClick={setHeadphonesOn}
-            className="h-7 w-7 p-1 transition-transform duration-500 hover:rotate-15 rounded-md  text-discord-red"
-          />
-        </div>
-      )}
-      {settings.microphoneOn ? (
-        <div className="rounded-md hover:bg-discord-dark">
-          <MicrophoneOn
-            onClick={setMicrophoneOn}
-            className="h-7 w-7 p-1 ransition-transform duration-500 hover:rotate-15 rounded-md hover:bg-discord-dark text-discord-gray fill-current"
-          />
-        </div>
-      ) : (
-        <div className="rounded-md bg-discord-darker-red hover:bg-discord-dark-red">
-          <MicrophoneOff
-            onClick={setMicrophoneOn}
-            className="h-7 w-7 p-1 transition-transform duration-500 hover:rotate-15 rounded-md text-discord-red"
-          />
-        </div>
-      )}
+      <HeadphonesToggle
+        isActive={settings.headphonesOn}
+        onClick={setHeadphonesOn}
+      ></HeadphonesToggle>
+      <MircophoneToggle
+        isActive={settings.microphoneOn}
+        onClick={setMicrophoneOn}
+      ></MircophoneToggle>
       <div className=" hover:bg-discord-dark rounded">
         <img
           onClick={() => setOptionsOpen(prev => !prev)}
           className="h-7 w-7 p-1 rounded transition-transform duration-500 hover:rotate-120"
-          src="src/assets/gear.svg"
+          src={Gear}
           alt="options"
         ></img>
       </div>
+      {optionsOpen && (
+        <div
+          ref={modalRef}
+          className=" flex flex-col absolute left-44 bottom-24  bg-discord-darker border-1 min-h-20 min-w-50 max-w-50 border-discord-dark-gray rounded-2xl h-fit w-fit z-1 items-center justify-center gap-2 p-2"
+        >
+          <CloseButton onClick={() => setOptionsOpen(false)} />
+          <div>This is options content</div>
+        </div>
+      )}
     </div>
   );
 }

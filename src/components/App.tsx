@@ -8,7 +8,7 @@ import { Channel } from 'server/channels';
 import { Message } from 'server/messages';
 import LoginForm from './LoginForm';
 import { Session } from 'server/sessions';
-import { getSession, storeSession } from '@/auth';
+import { deleteSession, getSession, storeSession } from '@/storage';
 import UserBar from './UserBar';
 
 function App() {
@@ -35,7 +35,11 @@ function App() {
     const onChannels = (c: Channel[]) => setChannels(c);
     const onUsers = (u: Session[]) => setUsers(u);
     const onSession = (s: Session) => {
-      storeSession(s.sessionId);
+      storeSession({
+        sessionId: s.sessionId,
+        username: s.username,
+        avatar: s.avatar,
+      });
       setUser(s);
     };
     const onMessageReceived = (channel: string, message: Message) => {
@@ -65,6 +69,10 @@ function App() {
       );
     };
 
+    const onUserLeave = (user: Session) => {
+      setUsers(prev => prev.filter(s => s.userId !== user.userId));
+    };
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('channels', onChannels);
@@ -74,6 +82,7 @@ function App() {
     socket.on('user:join', onUserJoin);
     socket.on('user:disconnect', onUserDisconnect);
     socket.on('user:connect', onUserConnect);
+    socket.on('user:leave', onUserLeave);
 
     return () => {
       socket.off('connect', onConnect);
@@ -84,7 +93,8 @@ function App() {
       socket.off('session', onSession);
       socket.off('user:join', onUserJoin);
       socket.off('user:disconnect', onUserDisconnect);
-      socket.on('user:connect', onUserConnect);
+      socket.off('user:connect', onUserConnect);
+      socket.off('user:leave', onUserLeave);
     };
   }, [setChannels, setUser, setUsers]);
   useEffect(() => {
@@ -101,9 +111,18 @@ function App() {
   }, []);
   const handleLogout = () => socket.disconnect();
   const handleSocketConnect = (username: string, avatar: string) => {
-    const sessionId = getSession();
-    socket.auth = { username, avatar, sessionId };
-    socket.connect();
+    const session = getSession();
+    try {
+      socket.auth = { username, avatar, sessionId: session?.sessionId };
+      socket.connect();
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? `Server error occured: ${error.message}`
+          : 'Unknown server error occured'
+      );
+      return;
+    }
   };
   const handleChannelSelect = (index: number) => {
     setSelectedChannel(index);
@@ -114,9 +133,19 @@ function App() {
   const sendMessage = (channel: string, message: string) => {
     socket.emit('message:channel:send', channel, message.trim());
   };
+
+  const handleServerLeave = () => {
+    socket.emit('user:leave');
+    setIsConnected(false);
+    setUser(undefined);
+    deleteSession();
+  };
   return user ? (
     <div>
-      <Headbar name={'Discord'} logo="src/assets/discord-logo.png"></Headbar>
+      <Headbar
+        name={'Discord'}
+        logo={new URL('@/assets/discord-logo.png', import.meta.url).href}
+      ></Headbar>
       <div className="flex max-h-[calc(100vh-2rem)]">
         {settings.sidebarOpen && (
           <Sidebar
@@ -127,9 +156,9 @@ function App() {
             isConnected={isConnected}
             handleLogout={handleLogout}
             handleChannelSelect={handleChannelSelect}
+            handleServerLeave={handleServerLeave}
           ></Sidebar>
         )}
-
         <Chatroom
           users={users}
           settings={settings}

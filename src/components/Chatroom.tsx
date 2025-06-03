@@ -66,7 +66,7 @@ export default function Chatroom({
               className="h-6 w-6 fill-current text-discord-white hover:text-discord-gray"
             />
           )}
-          <span className="text-discord-white">
+          <span className="text-discord-white text-xl">
             <span className="text-2xl text-discord-gray">#</span>{' '}
             {channel && channel.name}
           </span>

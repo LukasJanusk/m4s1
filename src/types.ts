@@ -4,3 +4,9 @@ export type Settings = {
   isMobile: boolean;
   sidebarOpen: boolean;
 };
+
+export type SessionStore = {
+  sessionId: string;
+  username: string;
+  avatar: string;
+};

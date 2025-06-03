@@ -12,6 +12,7 @@ interface Props {
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
   handleLogout: () => void;
   handleChannelSelect: (index: number) => void;
+  handleServerLeave: () => void;
 }
 
 export default function Sidebar({
@@ -20,22 +21,22 @@ export default function Sidebar({
   settings,
   setSettings,
   isConnected,
-
   handleLogout,
   handleChannelSelect,
+  handleServerLeave,
 }: Props) {
   return (
     <div className="text-discord-white left-0 top-0 bg-discord-black min-w-96 h-[calc(100vh-2rem)] flex flex-col flex-[1]">
       <div className="flex min h-full">
         <div className="min-w-18 flex flex-col gap-3 items-center">
-          <ServerToggle />
+          <ServerToggle handleServerLeave={handleServerLeave} />
         </div>
         <div className="min-w-74 border-s-1 border-t-1 border-l-discord-dark border-t-discord-dark rounded-t-2xl rounded-r-none">
           {isConnected && (
             <div>
               <div className="flex flex-col self-start border-b-1 border-discord-dark min-h-8">
                 <div className="pl-2 pt-2 pr-2">
-                  <span>Channel options placeholder</span>
+                  <span className="text-xl">Channels</span>
                 </div>
               </div>
               {channels.map((c, index) => (
@@ -44,7 +45,11 @@ export default function Sidebar({
                     {' '}
                     #
                   </span>{' '}
-                  <span className="hover:text-discord-gray">{c.name}</span>
+                  <span
+                    className={`hover:text-discord-gray ${settings.isMobile ? 'text-2xl' : 'text-xl'}`}
+                  >
+                    {c.name}
+                  </span>
                 </div>
               ))}
             </div>

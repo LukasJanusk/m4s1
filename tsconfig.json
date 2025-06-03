@@ -8,12 +8,13 @@
     "downlevelIteration": true,
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
 
   "include": ["src", "server"]

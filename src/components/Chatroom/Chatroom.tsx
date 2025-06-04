@@ -1,19 +1,24 @@
 import { Settings } from '@/types';
 import Comment from './Comment';
 import Bars from '@/assets/bars.svg?react';
-import { Channel } from 'server/channels';
+import type { Channel, DMChannel } from 'server/channels';
 import { Session } from 'server/sessions';
 import { useEffect, useRef } from 'react';
+import Chatbox from './Chatbox';
 
 interface Props {
+  isDm: boolean;
+  user: Session;
   users: Partial<Session>[];
-  channel: Channel;
+  channel?: Channel | DMChannel;
   settings: Settings;
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
-  sendMessage: (channel: string, message: string) => void;
+  sendMessage: (to: string, message: string) => void;
 }
 
 export default function Chatroom({
+  isDm,
+  user,
   users,
   channel,
   settings,
@@ -22,27 +27,17 @@ export default function Chatroom({
 }: Props) {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const messageEndRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [channel.messages]);
-  const handleCommentSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const target = event.target as typeof event.target & {
-      message: { value: string };
-    };
-    const message = target.message.value.trim();
-    if (message) {
-      sendMessage(channel.name, message);
-      target.message.value = '';
-    }
-  };
+  }, [channel?.messages]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Enter') {
         e.preventDefault();
         const message = textAreaRef.current?.value;
-        if (message && message.length > 0) {
+        if (message && message.length > 0 && channel) {
           sendMessage(channel.name, message);
           textAreaRef.current.value = '';
         }
@@ -50,7 +45,18 @@ export default function Chatroom({
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [channel.name, sendMessage]);
+  }, [channel?.name, sendMessage]);
+  const messageReceiver = () => {
+    if (isDm && channel && 'participants' in channel) {
+      const to = channel.participants.find(
+        p => p.userId !== user.userId
+      )?.userId;
+      if (to) return to;
+    } else if (!isDm && channel) {
+      return channel.name;
+    }
+  };
+
   return (
     <div className="bg-discord-darker flex-[3] h-[calc(100vh-2rem)] text-discord-gray border-t-1 border-discord-dark flex flex-col">
       <div className="border-discord-dark border-b-1 max-w-full min-h-8 ml-4">
@@ -86,23 +92,9 @@ export default function Chatroom({
           <div ref={messageEndRef} />
         </div>
       )}
-      <form
-        onSubmit={handleCommentSubmit}
-        className="relative bg-discord-dark border border-discord-dark rounded-2xl p-2 m-4 min-h-20 flex items-center"
-      >
-        <textarea
-          ref={textAreaRef}
-          name="message"
-          className="bg-transparent w-full text-white outline-none focus:outline-none focus:ring-0 pr-10 resize-none overflow-y-auto"
-          rows={3}
-        />
-        <button
-          className="absolute right-0 top-0 h-full w-12 hover:bg-discord-dark-gray px-2 py-1 rounded rounded-r-2xl hover:text-discord-white"
-          type="submit"
-        >
-          {'→'}
-        </button>
-      </form>
+      {channel && (
+        <Chatbox onSubmit={sendMessage} to={messageReceiver()}></Chatbox>
+      )}
     </div>
   );
 }

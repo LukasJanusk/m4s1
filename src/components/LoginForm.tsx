@@ -55,7 +55,7 @@ export default function LoginForm({ onSubmit }: Props) {
 
         <button
           type="submit"
-          className="bg-discord-blurple border-2 border-discord-light w-auto h-10 rounded-xl m-2 hover:border-discord-green transform-border duration-200"
+          className="bg-discord-blurple border-2 border-discord-light w-auto h-10 rounded-xl m-2 hover:border-discord-green transform-border  duration-200"
         >
           Login →
         </button>

@@ -4,18 +4,27 @@ import CloseButton from '@/components/Reusable/CloseButton';
 
 interface Props {
   handleServerLeave: () => void;
+  onServerSelect: () => void;
+  isActive: boolean;
 }
 
-export default function ServerToggle({ handleServerLeave }: Props) {
+export default function ServerToggle({
+  handleServerLeave,
+  onServerSelect,
+  isActive,
+}: Props) {
   const [isHovering, setIsHovering] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const serverRef = useRef<HTMLDivElement | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const node = serverRef.current;
     if (!node) return;
 
-    const handleEnter = () => setIsHovering(true);
+    const handleEnter = () => {
+      setIsHovering(true);
+    };
     const handleLeave = () => setIsHovering(false);
 
     node.addEventListener('mouseenter', handleEnter);
@@ -64,17 +73,19 @@ export default function ServerToggle({ handleServerLeave }: Props) {
         <div
           className={`relative w-1 bg-discord-white transition-all duration-100 rounded-r-2xl ${
             isHovering ? 'h-6' : 'h-2'
-          }`}
+          } ${isActive && 'h-8'}`}
         ></div>
       </div>
       <div
         ref={serverRef}
         onClick={() => {
-          setSettingsOpen(true);
+          onServerSelect();
         }}
         className="aspect-square w-1/2 "
       >
-        <ServerLogo></ServerLogo>
+        <ServerLogo
+          imgUrl={new URL('@/assets/turing-logo.png', import.meta.url).href}
+        ></ServerLogo>
       </div>
       {settingsOpen && (
         <div

@@ -1,10 +1,10 @@
 interface Props {
-  isConnected: boolean;
-  avatar: string | undefined;
-  showStatus: boolean;
-  showIndicator: boolean;
-  showName: boolean;
-  name: string | undefined;
+  isConnected?: boolean;
+  avatar?: string;
+  showStatus?: boolean;
+  showIndicator?: boolean;
+  showName?: boolean;
+  name?: string;
 }
 
 export default function Avatar({

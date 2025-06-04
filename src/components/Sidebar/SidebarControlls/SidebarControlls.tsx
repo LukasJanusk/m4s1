@@ -11,6 +11,7 @@ interface Props {
   settings: Settings;
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
   handleLogout: () => void;
+  handleServerLeave: () => void;
 }
 export default function SidebarControlls({
   user,
@@ -18,6 +19,7 @@ export default function SidebarControlls({
   settings,
   setSettings,
   handleLogout,
+  handleServerLeave,
 }: Props) {
   const [modalOpen, setModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -38,7 +40,7 @@ export default function SidebarControlls({
       {modalOpen && (
         <div
           ref={modalRef}
-          className=" flex flex-col absolute left-2 bottom-24  bg-discord-darker border-1  border-discord-dark-gray rounded-2xl h-fit w-fit z-1 items-center justify-center gap-2 p-2"
+          className=" flex flex-col absolute left-2 bottom-24  bg-discord-darker border-1  border-discord-dark-gray rounded-2xl h-fit min-w-92 w-fit z-1 items-center justify-center gap-2 p-2"
         >
           <CloseButton onClick={() => setModalOpen(false)}></CloseButton>
           <div className="mt-4 p-2">
@@ -67,7 +69,11 @@ export default function SidebarControlls({
           name={user.username}
         />
       </div>
-      <Widgets settings={settings} setSettings={setSettings}></Widgets>
+      <Widgets
+        settings={settings}
+        setSettings={setSettings}
+        handleServerLeave={handleServerLeave}
+      ></Widgets>
     </div>
   );
 }

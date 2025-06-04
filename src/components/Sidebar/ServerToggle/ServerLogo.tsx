@@ -3,12 +3,15 @@ import logo from '@/assets/discrod-server-logo.svg?url';
 interface Props {
   imgUrl?: string;
   unread?: number;
+  isActive?: boolean;
 }
 
-export default function ServerLogo({ imgUrl, unread }: Props) {
+export default function ServerLogo({ imgUrl, unread, isActive }: Props) {
   return (
     <div className="relative h-full aspect-square ">
-      <div className=" bg-discord-darker rounded-xl text-center hover:bg-discord-blurple transition-all duration-150">
+      <div
+        className={`rounded-xl text-center ${isActive ? 'bg-discord-blurple' : 'bg-discord-darker'} hover:bg-discord-blurple transition-all duration-150`}
+      >
         {imgUrl ? (
           <img
             src={imgUrl}

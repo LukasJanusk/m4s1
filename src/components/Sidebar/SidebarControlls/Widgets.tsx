@@ -4,13 +4,19 @@ import Gear from '@/assets/gear.svg?url';
 import CloseButton from '../../Reusable/CloseButton';
 import MircophoneToggle from '../MicrophoneToggle';
 import HeadphonesToggle from '../HeadphonesToggle';
+import Toggle from '@/components/Reusable/Toggle';
 
 interface Props {
   settings: Settings;
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
+  handleServerLeave: () => void;
 }
 
-export default function Widgets({ settings, setSettings }: Props) {
+export default function Widgets({
+  settings,
+  setSettings,
+  handleServerLeave,
+}: Props) {
   const [optionsOpen, setOptionsOpen] = useState(false);
   const setHeadphonesOn = () =>
     setSettings((prev: Settings) => ({
@@ -60,18 +66,21 @@ export default function Widgets({ settings, setSettings }: Props) {
       {optionsOpen && (
         <div
           ref={modalRef}
-          className=" flex flex-col absolute left-44 bottom-24  bg-discord-darker border-1 min-h-20 min-w-50 max-w-50 border-discord-dark-gray rounded-2xl h-fit w-fit z-1 items-center justify-center gap-2 p-2"
+          className=" flex flex-col absolute left-44 bottom-24 bg-discord-darker border-1 min-h-20 min-w-50 max-w-60 border-discord-dark-gray rounded-2xl h-fit w-fit z-1 items-center justify-center gap-4 p-2"
         >
           <CloseButton onClick={() => setOptionsOpen(false)} />
-          <div>
-            <label htmlFor="system-messages">System messages </label>
-            <input
-              type="checkbox"
-              name="system-messages"
-              id="system-messages"
-              checked={settings.showSystemMessages}
-              onChange={() => setSystemMessage()}
+          <div className="mt-4 mb-2">
+            <Toggle
+              isOn={settings.showSystemMessages}
+              onChange={setSystemMessage}
+              name={'System messages'}
             />
+            <button
+              onClick={handleServerLeave}
+              className={` w-full mb-2 mt-2 bg-discord-dark-red rounded-xl p-2  border-2  border-discord-darker-red hover:border-discord-red transform-border duration-200`}
+            >
+              Leave Server
+            </button>
           </div>
         </div>
       )}

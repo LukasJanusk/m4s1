@@ -2,7 +2,7 @@ export default {
   initializeStore: () => {
     const sessionStorage = new Map();
 
-    function getSessionById(sessionId: string) {
+    function getSessionById(sessionId: string): Session {
       return sessionStorage.get(sessionId);
     }
 
@@ -27,6 +27,7 @@ export default {
           username: session.username,
           connected: session.connected,
           avatar: session.avatar,
+          dms: session.dms,
         };
       });
     }

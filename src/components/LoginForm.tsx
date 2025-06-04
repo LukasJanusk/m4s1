@@ -33,6 +33,7 @@ export default function LoginForm({ onSubmit }: Props) {
           id="username"
           type="text"
           required
+          max={30}
         ></input>
 
         <div>

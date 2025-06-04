@@ -3,8 +3,8 @@ import express from 'express';
 import http from 'http';
 import { Server, ExtendedError, Socket } from 'socket.io';
 import generateRandomId from './utils.js';
-import s from './sessions.js';
-import c from './channels.js';
+import s, { Session } from './sessions.js';
+import c, { DMChannel } from './channels.js';
 import m from './messages.js';
 
 interface CustomSocket extends Socket {
@@ -33,6 +33,7 @@ const WELCOME_CHANNEL = 'welcome';
 
 const sessions = s.initializeStore();
 const channels = CHANNEL_NAMES.map(channel => c.initializeChannel(channel));
+const dmchannels: DMChannel[] = [];
 
 // Custom middleware to prepare the session.
 io.use((socket: CustomSocket, next: (err?: ExtendedError) => void) => {
@@ -79,10 +80,11 @@ io.on('connection', (socket: CustomSocket) => {
   };
   console.log('Session connected: ' + currentSession.sessionId);
 
-  sessions.setSession(socket.sessionId, currentSession);
+  sessions.setSession(socket.sessionId, currentSession as unknown as Session);
   socket.emit('session', currentSession);
 
   channels.forEach(channel => socket.join(channel.name));
+  dmchannels.forEach(channel => socket.join(channel.name));
   socket.join(currentSession.userId);
 
   if (!userSession) {
@@ -98,7 +100,7 @@ io.on('connection', (socket: CustomSocket) => {
   socket.emit('channels', channels);
   const users = sessions.getAllUsers();
   socket.emit('users', users);
-  socket.broadcast.emit('users', users);
+  // socket.broadcast.emit('users', users);
   socket.on('user:leave', () => {
     socket.in(WELCOME_CHANNEL).emit('user:leave', {
       userId: currentSession.userId,
@@ -116,13 +118,47 @@ io.on('connection', (socket: CustomSocket) => {
 
     if (!registeredChannel) return;
 
-    const builtMessage = m.buildMessage(currentSession, message);
+    const builtMessage = m.buildMessage(
+      currentSession as unknown as Session,
+      message
+    );
 
     registeredChannel.messages.push(builtMessage);
 
     socket.to(channel).emit('message:channel', channel, builtMessage);
     socket.emit('message:channel', channel, builtMessage); // Send to the sender as well
   });
+
+  socket.on(
+    'message:user:send',
+    (from: string, to: string, message: string) => {
+      const sender = sessions.getSessionByUserId(from);
+      const receiver = sessions.getSessionByUserId(to);
+      if (!sender || !receiver) return;
+      const builtMessage = m.buildMessage(sender, message);
+
+      let dmChannel = dmchannels.find(
+        c =>
+          c.participants.some(p => p.userId === from) &&
+          c.participants.some(p => p.userId === to)
+      );
+      if (!dmChannel) {
+        dmChannel = c.initializeDmChannel(
+          `${sender.username}, ${receiver.username}`,
+          [
+            { userId: from, username: sender.username },
+            { userId: to, username: receiver.username },
+          ]
+        );
+        dmchannels.push(dmChannel);
+        socket.join(dmChannel.name);
+        io.to(receiver.userId).socketsJoin(dmChannel.name);
+        socket.to(to).emit('DMChannel', dmChannel);
+        socket.emit('DMChannel', dmChannel);
+      }
+      socket.to(dmChannel.name).emit('dm', dmChannel.name, builtMessage);
+    }
+  );
 
   socket.on('disconnect', () => {
     const session = sessions.getSessionById(socket.sessionId!);

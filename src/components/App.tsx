@@ -4,7 +4,7 @@ import Sidebar from './Sidebar/Sidebar';
 import Headbar from './Headbar';
 import Chatroom from './Chatroom/Chatroom';
 import { Settings } from '@/types';
-import { Channel } from 'server/channels';
+import { Channel, DMChannel } from 'server/channels';
 import { Message } from 'server/messages';
 import LoginForm from './LoginForm';
 import { Session } from 'server/sessions';
@@ -16,6 +16,7 @@ function App() {
   const [user, setUser] = useState<Session>();
   const [selectedChannel, setSelectedChannel] = useState<number>(0);
   const [channels, setChannels] = useState<Channel[]>([]);
+  const [dmChannels, setDmChannels] = useState<DMChannel[]>([]);
   const [users, setUsers] = useState<Partial<Session>[]>([]);
   const [settings, setSettings] = useState<Settings>({
     microphoneOn: true,
@@ -94,6 +95,18 @@ function App() {
       setUsers(prev => prev.filter(s => s.userId !== user.userId));
     };
 
+    const onDm = (dmChannel: string, dm: Message) => {
+      setDmChannels(prev =>
+        prev.map(c =>
+          c.name === dmChannel ? { ...c, messages: [...c.messages, dm] } : c
+        )
+      );
+    };
+
+    const onDmChannel = (dmChannel: DMChannel) => {
+      setDmChannels(prev => [...prev, dmChannel]);
+    };
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('channels', onChannels);
@@ -104,6 +117,8 @@ function App() {
     socket.on('user:connect', onUserConnect);
     socket.on('user:join', onUserJoin);
     socket.on('user:leave', onUserLeave);
+    socket.on('dm', onDm);
+    socket.on('DMChannel', onDmChannel);
 
     return () => {
       socket.off('connect', onConnect);
@@ -117,6 +132,8 @@ function App() {
       socket.off('user:connect', onUserConnect);
       socket.off('user:leave', onUserLeave);
       socket.off('user:join', onUserJoin);
+      socket.off('dm', onDm);
+      socket.off('DMChannel', onDmChannel);
     };
   }, [setChannels, setUser, setUsers]);
   useEffect(() => {

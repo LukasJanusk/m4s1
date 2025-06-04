@@ -1,8 +1,8 @@
 import { Settings } from '@/types';
 import { Session } from 'server/sessions';
 import { useEffect, useRef, useState } from 'react';
-import Avatar from './Avatar';
-import CloseButton from './CloseButton';
+import Avatar from '@/components/Reusable/Avatar';
+import CloseButton from '@/components/Reusable/CloseButton';
 import Widgets from './Widgets';
 
 interface Props {

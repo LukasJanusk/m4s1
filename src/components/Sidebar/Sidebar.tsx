@@ -1,7 +1,7 @@
 import type { Channel } from 'server/channels';
-import SideBarControlls from './SidebarControlls';
+import SideBarControlls from './SidebarControlls/SidebarControlls';
 import { Settings } from '@/types';
-import ServerToggle from './ServerToggle';
+import ServerToggle from './ServerToggle/ServerToggle';
 import { Session } from 'server/sessions';
 
 interface Props {

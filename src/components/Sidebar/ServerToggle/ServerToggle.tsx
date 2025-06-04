@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import ServerLogo from './ServerLogo';
-import CloseButton from './CloseButton';
+import CloseButton from '@/components/Reusable/CloseButton';
 
 interface Props {
   handleServerLeave: () => void;
@@ -8,7 +8,7 @@ interface Props {
 
 export default function ServerToggle({ handleServerLeave }: Props) {
   const [isHovering, setIsHovering] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const serverRef = useRef<HTMLDivElement | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -26,25 +26,30 @@ export default function ServerToggle({ handleServerLeave }: Props) {
       node.removeEventListener('mouseleave', handleLeave);
     };
   }, []);
+
   useEffect(() => {
     const adjustModalPosition = () => {
       const modal = modalRef.current;
-      if (modal) {
+      if (modal && settingsOpen) {
         const rect = modal.getBoundingClientRect();
         if (rect.top < 0) {
           modal.style.top = `${Math.max(0, window.scrollY)}px`;
         }
+        if (rect.bottom > window.innerHeight) {
+          const overflow = rect.bottom - window.innerHeight;
+          modal.style.top = `${modal.offsetTop - overflow}px`;
+        }
       }
     };
-
-    if (modalOpen) {
+    if (settingsOpen) {
       adjustModalPosition();
     }
-  }, [modalOpen]);
+  }, [settingsOpen]);
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        setModalOpen(false);
+        setSettingsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -52,11 +57,9 @@ export default function ServerToggle({ handleServerLeave }: Props) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
   return (
-    <div
-      className="h-10 flex gap-2 items-center flex-row"
-      onClick={() => setModalOpen(prev => !prev)}
-    >
+    <div className="h-10 flex gap-2 items-center flex-row">
       <div>
         <div
           className={`relative w-1 bg-discord-white transition-all duration-100 rounded-r-2xl ${
@@ -64,16 +67,22 @@ export default function ServerToggle({ handleServerLeave }: Props) {
           }`}
         ></div>
       </div>
-      <div ref={serverRef} className="aspect-square w-1/2 ">
+      <div
+        ref={serverRef}
+        onClick={() => {
+          setSettingsOpen(true);
+        }}
+        className="aspect-square w-1/2 "
+      >
         <ServerLogo></ServerLogo>
       </div>
-      {modalOpen && (
+      {settingsOpen && (
         <div
           ref={modalRef}
           className=" flex flex-col absolute left-16 bg-discord-darker border-1 min-h-20 min-w-50 max-w-50 border-discord-dark-gray rounded-2xl h-fit w-fit z-1 items-center justify-center gap-2 p-2"
         >
-          <div className="mt-4">Server Options placeholder</div>
-          <CloseButton onClick={() => setModalOpen(false)}></CloseButton>
+          <CloseButton onClick={() => setSettingsOpen(false)}></CloseButton>
+          <div className="mt-4">Server options placeholder</div>
           <button
             onClick={handleServerLeave}
             className={` w-full mb-2 bg-discord-dark-red rounded-xl p-2  border-2  border-discord-darker-red hover:border-discord-red transform-border duration-200`}

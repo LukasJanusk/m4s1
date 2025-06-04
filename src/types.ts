@@ -3,6 +3,7 @@ export type Settings = {
   headphonesOn: boolean;
   isMobile: boolean;
   sidebarOpen: boolean;
+  showSystemMessages: boolean;
 };
 
 export type SessionStore = {

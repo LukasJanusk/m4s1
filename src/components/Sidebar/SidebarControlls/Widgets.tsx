@@ -1,9 +1,9 @@
 import { Settings } from '@/types';
 import { useState, useEffect, useRef } from 'react';
 import Gear from '@/assets/gear.svg?url';
-import CloseButton from './CloseButton';
-import MircophoneToggle from './MicrophoneToggle';
-import HeadphonesToggle from './HeadphonesToggle';
+import CloseButton from '../../Reusable/CloseButton';
+import MircophoneToggle from '../MicrophoneToggle';
+import HeadphonesToggle from '../HeadphonesToggle';
 
 interface Props {
   settings: Settings;
@@ -22,7 +22,12 @@ export default function Widgets({ settings, setSettings }: Props) {
       ...prev,
       microphoneOn: !prev.microphoneOn,
     }));
-
+  const setSystemMessage = () => {
+    setSettings(prev => ({
+      ...prev,
+      showSystemMessages: !prev.showSystemMessages,
+    }));
+  };
   const modalRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -58,7 +63,16 @@ export default function Widgets({ settings, setSettings }: Props) {
           className=" flex flex-col absolute left-44 bottom-24  bg-discord-darker border-1 min-h-20 min-w-50 max-w-50 border-discord-dark-gray rounded-2xl h-fit w-fit z-1 items-center justify-center gap-2 p-2"
         >
           <CloseButton onClick={() => setOptionsOpen(false)} />
-          <div>This is options content</div>
+          <div>
+            <label htmlFor="system-messages">System messages </label>
+            <input
+              type="checkbox"
+              name="system-messages"
+              id="system-messages"
+              checked={settings.showSystemMessages}
+              onChange={() => setSystemMessage()}
+            />
+          </div>
         </div>
       )}
     </div>

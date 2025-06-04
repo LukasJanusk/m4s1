@@ -1,5 +1,5 @@
 import { Session } from 'server/sessions';
-import Avatar from './Avatar';
+import Avatar from './Reusable/Avatar';
 
 interface Props {
   users: Partial<Session>[];

@@ -75,7 +75,13 @@ export default function Chatroom({
       {channel && (
         <div className="flex-1 overflow-y-auto p-2 w-full break-words">
           {channel.messages.map(m => (
-            <Comment key={m.id} users={users} message={m}></Comment>
+            <Comment
+              key={m.id}
+              users={users}
+              message={m}
+              isSystem={m.userId === 'system'}
+              settings={settings}
+            ></Comment>
           ))}
           <div ref={messageEndRef} />
         </div>

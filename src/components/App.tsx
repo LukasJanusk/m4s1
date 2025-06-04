@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { socket } from '@/libs/socket';
-import Sidebar from './Sidebar';
+import Sidebar from './Sidebar/Sidebar';
 import Headbar from './Headbar';
-import Chatroom from './Chatroom';
+import Chatroom from './Chatroom/Chatroom';
 import { Settings } from '@/types';
 import { Channel } from 'server/channels';
 import { Message } from 'server/messages';
@@ -22,6 +22,7 @@ function App() {
     headphonesOn: true,
     isMobile: true,
     sidebarOpen: false,
+    showSystemMessages: true,
   });
 
   useEffect(() => {
@@ -49,27 +50,47 @@ function App() {
         )
       );
     };
-    const onUserJoin = (u: Partial<Session>) => {
-      setUsers(prev => {
-        if (!prev.find(user => user.userId === u.userId)) {
-          return [...prev, u];
-        }
-        return prev;
-      });
-    };
     const onUserDisconnect = (u: Partial<Session>) => {
       setUsers(prev =>
         prev.map(s => (s.userId === u.userId ? { ...s, connected: false } : s))
       );
     };
-
     const onUserConnect = (u: Partial<Session>) => {
       setUsers(prev =>
         prev.map(s => (s.userId === u.userId ? { ...s, connected: true } : s))
       );
     };
-
+    const onUserJoin = (user: Session) => {
+      const systemMessage = {
+        id: `sys-${Date.now()}`,
+        userId: 'system',
+        username: user.username,
+        message: `has joined the server`,
+        timestamp: new Date().toISOString(),
+      };
+      setChannels(prev =>
+        prev.map(c => {
+          return c.name === 'welcome'
+            ? { ...c, messages: [...c.messages, systemMessage] }
+            : c;
+        })
+      );
+    };
     const onUserLeave = (user: Session) => {
+      const systemMessage = {
+        id: `sys-${Date.now()}`,
+        userId: 'system',
+        username: user.username,
+        message: `has left the server`,
+        timestamp: new Date().toISOString(),
+      };
+      setChannels(prev =>
+        prev.map(c => {
+          return c.name === 'welcome'
+            ? { ...c, messages: [...c.messages, systemMessage] }
+            : c;
+        })
+      );
       setUsers(prev => prev.filter(s => s.userId !== user.userId));
     };
 
@@ -79,9 +100,9 @@ function App() {
     socket.on('message:channel', onMessageReceived);
     socket.on('users', onUsers);
     socket.on('session', onSession);
-    socket.on('user:join', onUserJoin);
     socket.on('user:disconnect', onUserDisconnect);
     socket.on('user:connect', onUserConnect);
+    socket.on('user:join', onUserJoin);
     socket.on('user:leave', onUserLeave);
 
     return () => {
@@ -95,6 +116,7 @@ function App() {
       socket.off('user:disconnect', onUserDisconnect);
       socket.off('user:connect', onUserConnect);
       socket.off('user:leave', onUserLeave);
+      socket.off('user:join', onUserJoin);
     };
   }, [setChannels, setUser, setUsers]);
   useEffect(() => {
@@ -130,7 +152,7 @@ function App() {
       setSettings(prev => ({ ...prev, sidebarOpen: false }));
   };
 
-  const sendMessage = (channel: string, message: string) => {
+  const handleSendMessage = (channel: string, message: string) => {
     socket.emit('message:channel:send', channel, message.trim());
   };
 
@@ -164,7 +186,7 @@ function App() {
           settings={settings}
           setSettings={setSettings}
           channel={channels[selectedChannel]}
-          sendMessage={sendMessage}
+          sendMessage={handleSendMessage}
         ></Chatroom>
         <UserBar users={users} isMobile={settings.isMobile}></UserBar>
       </div>

@@ -1,18 +1,23 @@
 import { DMChannel } from 'server/channels';
 import { Session } from 'server/sessions';
 import Avatar from '../Reusable/Avatar';
+import Trash from '@/assets/trash.svg?react';
 
 interface Props {
   dmChannels: DMChannel[];
+  selectedDmChannel: number;
   users: Session[];
   user: Session;
   onDmChannelSelect: (index: number) => void;
+  handleDmChannelDelete: (index: number) => void;
 }
 export default function DMchannels({
   dmChannels,
+  selectedDmChannel,
   users,
   user,
   onDmChannelSelect,
+  handleDmChannelDelete,
 }: Props) {
   const otherUser = (c: DMChannel) => {
     const participant = c.participants.find(p => p.userId !== user.userId);
@@ -28,7 +33,7 @@ export default function DMchannels({
             <div
               onClick={() => onDmChannelSelect(index)}
               key={c.name}
-              className={`flex flex-col gap-2 m-2 bg-discord-darker p-2 border-discord-dark border-1 rounded-2xl`}
+              className={`relative flex flex-row justify-between gap-2 m-2 bg-discord-darker p-2 ${selectedDmChannel === index ? `border-discord-light` : 'border-discord-dark'} border-1 rounded-2xl hover:bg-discord-dark-gray transition-all duration-200`}
             >
               <Avatar
                 isConnected={user?.connected}
@@ -38,6 +43,15 @@ export default function DMchannels({
                 name={user?.username}
                 showName={true}
               ></Avatar>
+              {!user && (
+                <div className="absolote right-0 hover:bg-discord-dark-red rounded-lg w-8 h-8 p-1">
+                  <button onClick={() => handleDmChannelDelete(index)}>
+                    <Trash
+                      className={`w-full h-fit right-20 fill-current text-discord-gray hover:text-discord-red hover:rotate-10 transition-all duration-350`}
+                    />
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}

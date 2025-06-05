@@ -12,6 +12,7 @@ interface Props {
   users: Session[];
   channels: Channel[];
   dmChannels: DMChannel[];
+  selectedDmChannel: number;
   settings: Settings;
   isConnected: boolean;
   dmActive: boolean;
@@ -21,6 +22,7 @@ interface Props {
   handleChannelSelect: (index: number) => void;
   handleDmChannelSelect: (index: number) => void;
   handleServerLeave: () => void;
+  handleDmChannelDelete: (index: number) => void;
 }
 
 export default function Sidebar({
@@ -30,6 +32,7 @@ export default function Sidebar({
   dmChannels,
   settings,
   dmActive,
+  selectedDmChannel,
   toggleDmActive,
   setSettings,
   isConnected,
@@ -37,6 +40,7 @@ export default function Sidebar({
   handleChannelSelect,
   handleDmChannelSelect,
   handleServerLeave,
+  handleDmChannelDelete,
 }: Props) {
   const onServerSelect = () => {
     toggleDmActive();
@@ -59,9 +63,11 @@ export default function Sidebar({
           {dmActive ? (
             <DMchannels
               dmChannels={dmChannels}
+              selectedDmChannel={selectedDmChannel}
               user={user}
               users={users}
               onDmChannelSelect={handleDmChannelSelect}
+              handleDmChannelDelete={handleDmChannelDelete}
             ></DMchannels>
           ) : (
             <ChannelList

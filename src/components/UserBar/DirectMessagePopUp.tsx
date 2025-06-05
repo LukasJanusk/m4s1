@@ -19,7 +19,7 @@ export default function DirectMessagePopUp({
     const form = e.currentTarget;
     const formData = new FormData(form);
     const message = formData.get('message') as string;
-    onSubmit(message);
+    if (message && message.trim().length > 0) onSubmit(message.trim());
   };
   const modalRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function DirectMessagePopUp({
         ref={modalRef}
         className={`absolute ${isMobile ? 'right-0' : 'right-20'} flex flex-col  bg-discord-darker border-1 min-h-20 min-w-90 max-w-screen border-discord-dark-gray rounded-2xl h-fit w-fit z-1 gap-2 p-2 transition-all duration-150`}
       >
-        <CloseButton onClick={() => onClose()} />
+        <CloseButton onClick={onClose} />
 
         <form onSubmit={handleSubmit} className="mt-4 h-40 flex flex-col gap-6">
           <textarea

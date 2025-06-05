@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import express from 'express';
 import http from 'http';
 import { Server, ExtendedError, Socket } from 'socket.io';
@@ -171,6 +170,10 @@ io.on('connection', (socket: CustomSocket) => {
     socket.emit('dm', dmChannel.name, builtMessage);
   });
 
+  socket.on('dm:channel:delete', (dmChannel: DMChannel) => {
+    const index = dmChannels.findIndex(d => d.name === dmChannel.name);
+    if (index >= 0) dmChannels.splice(index, 1);
+  });
   socket.on('disconnect', () => {
     const session = sessions.getSessionById(socket.sessionId!);
 

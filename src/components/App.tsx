@@ -200,6 +200,11 @@ function App() {
     setUser(undefined);
     deleteSession();
   };
+  const handleDmChannelDelete = (index: number) => {
+    socket.emit('dm:channel:delete', dmChannels[index]);
+    setSelectedChannel(0);
+    setDmChannels(prev => prev.filter((_, idx) => index !== idx));
+  };
   return user ? (
     <div>
       <Headbar
@@ -213,6 +218,7 @@ function App() {
             users={users}
             channels={channels}
             dmChannels={dmChannels}
+            selectedDmChannel={selectedDmChannel}
             settings={settings}
             setSettings={setSettings}
             isConnected={isConnected}
@@ -222,6 +228,7 @@ function App() {
             handleChannelSelect={handleChannelSelect}
             handleDmChannelSelect={handleDmChannelSelect}
             handleServerLeave={handleServerLeave}
+            handleDmChannelDelete={handleDmChannelDelete}
           ></Sidebar>
         )}
         <Chatroom

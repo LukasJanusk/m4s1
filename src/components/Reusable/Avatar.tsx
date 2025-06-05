@@ -32,11 +32,18 @@ export default function Avatar({
             className={`absolute bottom-0 right-[-3px] ${status()} border-2 border-discord-darker h-4 w-4 rounded-full`}
           ></div>
         )}
-        {showName && name && (
-          <span className="text-discord-white absolute bottom-4 left-12 text-nowrap">
-            {name.length < 18 ? name : `${name.slice(0, 15)}...`}
+        {showName && (
+          <span
+            className={`${name ? `text-discord-white` : 'text-discord-red'} absolute bottom-4 left-12 text-nowrap`}
+          >
+            {name
+              ? name.length < 18
+                ? name
+                : `${name.slice(0, 15)}...`
+              : 'User deleted'}
           </span>
         )}
+
         {showStatus && (
           <span className="absolute bottom-0 left-12 text-discord-gray text-sm">
             {isConnected ? 'Online' : 'Offline'}

@@ -24,7 +24,10 @@ export default function Avatar({
         {` `}
         <img
           className="w-full h-full rounded-full"
-          src={avatar || 'src/assets/avatar-default.png'}
+          src={
+            avatar ||
+            new URL('@/assets/avatar-default.png', import.meta.url).href
+          }
           alt="avatar"
         ></img>
         {showIndicator && (

@@ -5,6 +5,7 @@ import CloseButton from '../../Reusable/CloseButton';
 import MircophoneToggle from '../MicrophoneToggle';
 import HeadphonesToggle from '../HeadphonesToggle';
 import Toggle from '@/components/Reusable/Toggle';
+import classNames from 'classnames';
 
 interface Props {
   settings: Settings;
@@ -45,6 +46,13 @@ export default function Widgets({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const baseOptionsModalStyles = `flex flex-col absolute bottom-24 bg-discord-darker border-1 min-h-20 min-w-50 border-discord-dark-gray rounded-2xl h-fit z-1 items-center justify-center gap-4 p-2`;
+  const modalStyles = classNames(
+    baseOptionsModalStyles,
+    settings.isMobile
+      ? 'w-80 left-1/2 transform -translate-x-1/2'
+      : 'left-44 max-w-60'
+  );
   return (
     <div className="flex-[1] flex flex-row justify-center items-center gap-2 mr-2 ">
       <HeadphonesToggle
@@ -64,12 +72,9 @@ export default function Widgets({
         ></img>
       </div>
       {optionsOpen && (
-        <div
-          ref={modalRef}
-          className=" flex flex-col absolute left-44 bottom-24 bg-discord-darker border-1 min-h-20 min-w-50 max-w-60 border-discord-dark-gray rounded-2xl h-fit w-fit z-1 items-center justify-center gap-4 p-2"
-        >
+        <div ref={modalRef} className={modalStyles}>
           <CloseButton onClick={() => setOptionsOpen(false)} />
-          <div className="mt-4 mb-2">
+          <div className="mt-4 mb-2 w-full flex flex-col gap-3">
             <Toggle
               isOn={settings.showSystemMessages}
               onChange={setSystemMessage}
@@ -77,7 +82,7 @@ export default function Widgets({
             />
             <button
               onClick={handleServerLeave}
-              className={` w-full mb-2 mt-2 bg-discord-dark-red rounded-xl p-2  border-2  border-discord-darker-red hover:border-discord-red transform-border duration-200`}
+              className={`w-full mb-2 mt-2 bg-discord-dark-red rounded-xl p-2  border-2  border-discord-darker-red hover:border-discord-red transform-border duration-200`}
             >
               Leave Server
             </button>

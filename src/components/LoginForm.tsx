@@ -17,19 +17,24 @@ export default function LoginForm({ onSubmit }: Props) {
     new URL('@/assets/rabbit.png', import.meta.url).href,
     new URL('@/assets/woman.png', import.meta.url).href,
   ];
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (index !== null)
       onSubmit((e.target as HTMLFormElement).username.value, avatars[index]);
   };
+
   const [index, setIndex] = useState<number | null>(null);
+
   const handleAvatarSelect = (index: number) => {
     setIndex(index);
   };
-  const handleMakeNewAccount = () => {
+
+  const handleNewAccount = () => {
     deleteSession();
     setSession(null);
   };
+
   const handleReconnect = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(
@@ -46,7 +51,7 @@ export default function LoginForm({ onSubmit }: Props) {
             onSubmit={handleReconnect}
           >
             <button
-              onClick={handleMakeNewAccount}
+              onClick={handleNewAccount}
               type="button"
               className="bg-discord-dark border-2 border-discord-dark-gray w-auto h-10 rounded-xl m-2 hover:border-discord-green transform-border  duration-200"
             >

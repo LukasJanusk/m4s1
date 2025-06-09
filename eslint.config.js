@@ -5,7 +5,7 @@ import pluginReact from 'eslint-plugin-react';
 import prettier from 'eslint-config-prettier';
 
 export default [
-  { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
+  { files: ['src/**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
@@ -14,6 +14,13 @@ export default [
   {
     rules: {
       'react/react-in-jsx-scope': 'off',
+    },
+  },
+  {
+    settings: {
+      react: {
+        version: 'detect',
+      },
     },
   },
 ];

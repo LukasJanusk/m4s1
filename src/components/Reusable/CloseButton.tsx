@@ -12,7 +12,9 @@ export default function CloseButton({ onClick }: Props) {
       }}
     >
       {' '}
-      <Close className="h-5 w-5 absolute right-2 top-2  fill-current text-discord-gray hover:text-discord-red transition-all duration-150"></Close>
+      <Close
+        className={`h-5 w-5 absolute right-2 top-2  fill-current text-discord-gray hover:text-discord-red transition-all duration-150`}
+      ></Close>
     </button>
   );
 }

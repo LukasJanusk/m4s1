@@ -36,11 +36,11 @@ export default function SidebarControlls({
   }, []);
 
   return (
-    <div className="flex w-full">
+    <div className="flex w-full justify-between">
       {modalOpen && (
         <div
           ref={modalRef}
-          className=" flex flex-col absolute left-2 bottom-24  bg-discord-darker border-1  border-discord-dark-gray rounded-2xl h-fit min-w-92 w-fit z-1 items-center justify-center gap-2 p-2"
+          className="flex flex-col absolute left-2 bottom-24  bg-discord-darker border-1  border-discord-dark-gray rounded-2xl h-fit min-w-92 w-fit z-1 items-center justify-center gap-2 p-2"
         >
           <CloseButton onClick={() => setModalOpen(false)}></CloseButton>
           <div className="mt-4 p-2">
@@ -48,7 +48,7 @@ export default function SidebarControlls({
           </div>
           <button
             onClick={handleLogout}
-            className={` w-full mb-2 bg-discord-dark-red rounded-xl p-2  border-2  border-discord-darker-red hover:border-discord-red transform-border duration-200`}
+            className={`w-full mb-2 bg-discord-dark-red rounded-xl p-2  border-2  border-discord-darker-red hover:border-discord-red transform-border duration-200`}
           >
             Logout
           </button>

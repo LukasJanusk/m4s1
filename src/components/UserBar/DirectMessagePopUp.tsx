@@ -49,7 +49,19 @@ export default function DirectMessagePopUp({
     isOpen && (
       <div
         ref={modalRef}
-        className={`absolute ${isMobile ? 'right-0' : 'right-20'} flex flex-col  bg-discord-darker border-1 min-h-20 min-w-90 max-w-screen border-discord-dark-gray rounded-2xl h-fit w-fit z-1 gap-2 p-2 transition-all duration-150`}
+        className={`
+        ${isMobile ? 'min-w-[90vw]' : 'min-w-90'}
+        absolute
+        left-1/2 top-1/2
+        transform
+        -translate-x-1/2
+        -translate-y-1/2
+        min-h-40 flex flex-col
+      bg-discord-darker
+        border-1
+        max-w-screen
+      border-discord-dark-gray rounded-2xl h-fit w-fit z-1 gap-2 p-2
+        transition-all duration-150`}
       >
         <CloseButton onClick={onClose} />
 
@@ -57,7 +69,16 @@ export default function DirectMessagePopUp({
           <textarea
             ref={textAreaRef}
             name="message"
-            className="bg-discord-dark rounded-2xl w-full p-2 text-white outline-none focus:outline-none focus:ring-0 pr-10 resize-none overflow-y-auto"
+            className={`
+              bg-discord-dark
+              rounded-2xl w-full
+              p-2
+              pr-10
+              text-white outline-none
+              focus:outline-none
+              focus:ring-0
+              resize-none
+              overflow-y-auto`}
             rows={3}
           />
           <button

@@ -1,3 +1,5 @@
+import classNames from 'classnames';
+
 interface Props {
   isOn: boolean;
   onChange: () => void;
@@ -5,10 +7,20 @@ interface Props {
 }
 
 export default function Toggle({ isOn, onChange, name }: Props) {
+  const boubleStyles = classNames(
+    isOn ? 'translate-x-5' : '',
+    `absolute top-0.5 left-0.5 w-4 h-4 bg-discord-white`,
+    `rounded-full transition-transform duration-300`
+  );
+  const backgroundStyles = classNames(
+    isOn ? 'bg-discord-green' : 'bg-discord-dark-gray',
+    `w-10 h-5 rounded-full shadow-inner transition-colors duration-300`
+  );
+
   return (
     <label
       htmlFor={`${name}-toggle`}
-      className="flex items-center gap-2 cursor-pointer"
+      className="flex items-center gap-2 cursor-pointer justify-between"
     >
       <span className="text-white">{name}</span>
       <div className="relative">
@@ -19,16 +31,8 @@ export default function Toggle({ isOn, onChange, name }: Props) {
           onChange={onChange}
           className="sr-only"
         />
-        <div
-          className={`w-10 h-5 rounded-full shadow-inner transition-colors duration-300 ${
-            isOn ? 'bg-discord-green' : 'bg-discord-dark-gray'
-          }`}
-        ></div>
-        <div
-          className={`absolute top-0.5 left-0.5 w-4 h-4 bg-discord-white rounded-full transition-transform duration-300 ${
-            isOn ? 'translate-x-5' : ''
-          }`}
-        ></div>
+        <div className={backgroundStyles}></div>
+        <div className={boubleStyles}></div>
       </div>
     </label>
   );

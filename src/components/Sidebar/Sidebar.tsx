@@ -46,9 +46,11 @@ export default function Sidebar({
     toggleDmActive();
   };
   return (
-    <div className="text-discord-white left-0 top-0 bg-discord-black min-w-96 h-[calc(100vh-2rem)] flex flex-col flex-[1]">
-      <div className="flex min h-full">
-        <div className="min-w-18 flex flex-col gap-3 items-center">
+    <div
+      className={`flex-[1] text-discord-white left-0 top-0 bg-discord-black min-w-96 h-[calc(100vh-2rem)] flex flex-col '}`}
+    >
+      <div className="flex h-full">
+        <div className="min-w-18 max-w-22 flex flex-col gap-3 items-center justify-start">
           <DMToggle
             onClick={() => toggleDmActive()}
             isActive={dmActive}
@@ -59,7 +61,7 @@ export default function Sidebar({
             isActive={!dmActive}
           />
         </div>
-        <div className="min-w-74 border-s-1 border-t-1 border-l-discord-dark border-t-discord-dark rounded-t-2xl rounded-r-none">
+        <div className="min-w-74 w-full border-s-1 border-t-1 border-l-discord-dark border-t-discord-dark rounded-t-2xl rounded-r-none">
           {dmActive ? (
             <DMchannels
               dmChannels={dmChannels}

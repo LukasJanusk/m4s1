@@ -44,8 +44,10 @@ export default function Chatroom({
       }
     };
     document.addEventListener('keydown', handleKeyDown);
+
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [channel?.name, sendMessage]);
+
   const messageReceiver = () => {
     if (isDm && channel && 'participants' in channel) {
       const to = channel.participants.find(
@@ -58,8 +60,10 @@ export default function Chatroom({
   };
 
   return (
-    <div className="bg-discord-darker flex-[3] h-[calc(100vh-2rem)] text-discord-gray border-t-1 border-discord-dark flex flex-col">
-      <div className="border-discord-dark border-b-1 max-w-full min-h-8 ml-4">
+    <div
+      className={`bg-discord-darker flex-[3] h-[calc(100vh-2rem)] text-discord-gray border-t-1 border-discord-dark flex flex-col`}
+    >
+      <div className={`border-discord-dark border-b-1 max-w-full min-h-8 ml-4`}>
         <div className="flex flex-row gap-2 items-center align-middle">
           {settings.isMobile && (
             <Bars

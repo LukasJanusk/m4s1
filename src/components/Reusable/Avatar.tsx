@@ -34,7 +34,7 @@ export default function Avatar({
         )}
         {showName && (
           <span
-            className={`${name ? `text-discord-white` : 'text-discord-red'} absolute bottom-4 left-12 text-nowrap`}
+            className={`absolute bottom-4 left-12 text-nowrap ${name ? `text-discord-white` : 'text-discord-red'}`}
           >
             {name
               ? name.length < 18

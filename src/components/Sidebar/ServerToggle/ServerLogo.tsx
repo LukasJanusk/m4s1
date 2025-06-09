@@ -1,4 +1,5 @@
 import logo from '@/assets/discrod-server-logo.svg?url';
+import classNames from 'classnames';
 
 interface Props {
   imgUrl?: string;
@@ -7,11 +8,19 @@ interface Props {
 }
 
 export default function ServerLogo({ imgUrl, unread, isActive }: Props) {
+  const mainBoxStyles = classNames(
+    `rounded-xl text-center hover:bg-discord-blurple transition-all duration-150`,
+    isActive ? 'bg-discord-blurple' : 'bg-discord-darker'
+  ).trim();
+
+  const unreadStyles = classNames(
+    `right-0 bottom-0 rounded-full w-5 h-5 absolute bg-discord-red`,
+    ` border-2 border-discord-black text-xs font-bold`
+  ).trim();
+
   return (
     <div className="relative h-full aspect-square ">
-      <div
-        className={`rounded-xl text-center ${isActive ? 'bg-discord-blurple' : 'bg-discord-darker'} hover:bg-discord-blurple transition-all duration-150`}
-      >
+      <div className={mainBoxStyles}>
         {imgUrl ? (
           <img
             src={imgUrl}
@@ -21,11 +30,7 @@ export default function ServerLogo({ imgUrl, unread, isActive }: Props) {
         ) : (
           <img src={logo} className="w-full h-full text-sm p-2.5" alt="dlogo" />
         )}
-        {unread && unread > 0 && (
-          <div className="right-0 bottom-0 rounded-full w-5 h-5 position absolute bg-discord-red border-2 border-discord-black text-xs font-bold">
-            {unread}
-          </div>
-        )}
+        {unread && unread > 0 && <div className={unreadStyles}>{unread}</div>}
       </div>
     </div>
   );

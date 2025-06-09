@@ -32,12 +32,16 @@ function App() {
     const onConnect = () => {
       setIsConnected(true);
     };
+
     const onDisconnect = () => {
       setUser(undefined);
       setIsConnected(false);
     };
+
     const onChannels = (channel: Channel[]) => setChannels(channel);
+
     const onUsers = (users: Session[]) => setUsers(users);
+
     const onSession = (s: Session) => {
       storeSession({
         sessionId: s.sessionId,
@@ -46,6 +50,7 @@ function App() {
       });
       setUser(s);
     };
+
     const onMessageReceived = (channel: string, message: Message) => {
       setChannels(prev =>
         prev.map(c =>
@@ -53,11 +58,13 @@ function App() {
         )
       );
     };
+
     const onUserDisconnect = (u: Partial<Session>) => {
       setUsers(prev =>
         prev.map(s => (s.userId === u.userId ? { ...s, connected: false } : s))
       );
     };
+
     const onUserConnect = (user: Session) => {
       setUsers(prev => {
         const exists = prev.find(s => s.userId === user.userId);
@@ -68,6 +75,7 @@ function App() {
           : [...prev, user];
       });
     };
+
     const onUserJoin = (user: Session) => {
       const systemMessage = {
         id: `sys-${Date.now()}`,
@@ -85,6 +93,7 @@ function App() {
       );
       setUsers(prev => [...prev, user]);
     };
+
     const onUserLeave = (user: Session) => {
       const systemMessage = {
         id: `sys-${Date.now()}`,
@@ -112,7 +121,16 @@ function App() {
     };
 
     const onDmChannel = (dmChannel: DMChannel) => {
-      setDmChannels(prev => [...prev, dmChannel]);
+      setDmChannels(prev => {
+        const exists = prev.find(c => c.name === dmChannel.name);
+        return exists
+          ? prev.map(c =>
+              c.name === dmChannel.name
+                ? { ...c, messages: dmChannel.messages }
+                : c
+            )
+          : [...prev, dmChannel];
+      });
     };
 
     const onError = (message: string) => {
@@ -149,7 +167,8 @@ function App() {
       socket.off('dm', onDm);
       socket.off('DMChannel', onDmChannel);
     };
-  }, [setChannels, setUser, setUsers]);
+  }, []);
+
   useEffect(() => {
     const handleResize = () => {
       setSettings(prev => ({
@@ -159,16 +178,18 @@ function App() {
       }));
     };
     window.addEventListener('resize', handleResize);
-    handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
   const handleLogout = () => socket.disconnect();
+
   const handleSocketConnect = (username: string, avatar: string) => {
     const session = getSession();
     try {
       socket.auth = { username, avatar, sessionId: session?.sessionId };
       socket.connect();
     } catch (error) {
+      console.log('error loging in');
       alert(
         error instanceof Error
           ? `Server error occured: ${error.message}`
@@ -177,11 +198,13 @@ function App() {
       return;
     }
   };
+
   const handleChannelSelect = (index: number) => {
     setSelectedChannel(index);
     if (settings.isMobile)
       setSettings(prev => ({ ...prev, sidebarOpen: false }));
   };
+
   const handleDmChannelSelect = (index: number) => {
     setSelectedDmChannel(index);
     if (settings.isMobile)
@@ -194,17 +217,20 @@ function App() {
   const handleDirectMessage = (to: string, message: string) => {
     socket.emit('message:user:send', to, message);
   };
+
   const handleServerLeave = () => {
     socket.emit('user:leave');
     setIsConnected(false);
     setUser(undefined);
     deleteSession();
   };
+
   const handleDmChannelDelete = (index: number) => {
     socket.emit('dm:channel:delete', dmChannels[index]);
     setSelectedChannel(0);
     setDmChannels(prev => prev.filter((_, idx) => index !== idx));
   };
+
   return user ? (
     <div>
       <Headbar
@@ -231,17 +257,23 @@ function App() {
             handleDmChannelDelete={handleDmChannelDelete}
           ></Sidebar>
         )}
-        <Chatroom
-          users={users}
-          user={user}
-          isDm={dmActive}
-          settings={settings}
-          setSettings={setSettings}
-          channel={
-            dmActive ? dmChannels[selectedDmChannel] : channels[selectedChannel]
-          }
-          sendMessage={dmActive ? handleDirectMessage : handleSendMessage}
-        ></Chatroom>
+        {settings.isMobile && settings.sidebarOpen ? (
+          <></>
+        ) : (
+          <Chatroom
+            users={users}
+            user={user}
+            isDm={dmActive}
+            settings={settings}
+            setSettings={setSettings}
+            channel={
+              dmActive
+                ? dmChannels[selectedDmChannel]
+                : channels[selectedChannel]
+            }
+            sendMessage={dmActive ? handleDirectMessage : handleSendMessage}
+          />
+        )}
         <UserBar
           userId={user.userId}
           users={users}
@@ -251,7 +283,7 @@ function App() {
       </div>
     </div>
   ) : (
-    <div className=" bg-discord-black h-[100vh] flex flex-col items-center justify-center">
+    <div className="bg-discord-black h-[100vh] flex flex-col items-center justify-center">
       <div className="bg-discord-darker rounded-2xl text-discord-white">
         <LoginForm onSubmit={handleSocketConnect}></LoginForm>
       </div>

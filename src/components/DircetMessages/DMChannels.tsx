@@ -2,6 +2,7 @@ import { DMChannel } from 'server/channels';
 import { Session } from 'server/sessions';
 import Avatar from '../Reusable/Avatar';
 import Trash from '@/assets/trash.svg?react';
+import classNames from 'classnames';
 
 interface Props {
   dmChannels: DMChannel[];
@@ -11,6 +12,7 @@ interface Props {
   onDmChannelSelect: (index: number) => void;
   handleDmChannelDelete: (index: number) => void;
 }
+
 export default function DMchannels({
   dmChannels,
   selectedDmChannel,
@@ -22,18 +24,28 @@ export default function DMchannels({
   const otherUser = (c: DMChannel) => {
     const participant = c.participants.find(p => p.userId !== user.userId);
     const foundUser = users.find(u => u.userId === participant?.userId);
+
     return foundUser;
   };
+
+  const cardBaseStyles = `relative flex flex-row justify-between gap-2 m-2  p-2 border-1 rounded-2xl bg-discord-darker hover:bg-discord-dark-gray transition-all duration-200`;
+  const trashButtonContainerStyles = `absolote right- hover:bg-discord-dark-red rounded-lg w-8 h-8 p-1`;
+  const trashIconStyles = `w-full h-fit right-20 fill-current text-discord-gray hover:text-discord-red hover:rotate-10 transition-all duration-350`;
+
   return (
     dmChannels.length > 0 && (
       <div>
         {dmChannels.map((c, index) => {
           const user = otherUser(c);
+          const cardClasses = classNames(cardBaseStyles, {
+            'border-discord-light': selectedDmChannel === index,
+            'border-discord-dark': selectedDmChannel !== index,
+          });
           return (
             <div
               onClick={() => onDmChannelSelect(index)}
               key={c.name}
-              className={`relative flex flex-row justify-between gap-2 m-2 bg-discord-darker p-2 ${selectedDmChannel === index ? `border-discord-light` : 'border-discord-dark'} border-1 rounded-2xl hover:bg-discord-dark-gray transition-all duration-200`}
+              className={cardClasses}
             >
               <Avatar
                 isConnected={user?.connected}
@@ -44,11 +56,9 @@ export default function DMchannels({
                 showName={true}
               ></Avatar>
               {!user && (
-                <div className="absolote right-0 hover:bg-discord-dark-red rounded-lg w-8 h-8 p-1">
+                <div className={trashButtonContainerStyles}>
                   <button onClick={() => handleDmChannelDelete(index)}>
-                    <Trash
-                      className={`w-full h-fit right-20 fill-current text-discord-gray hover:text-discord-red hover:rotate-10 transition-all duration-350`}
-                    />
+                    <Trash className={trashIconStyles} />
                   </button>
                 </div>
               )}

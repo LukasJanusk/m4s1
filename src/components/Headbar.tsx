@@ -5,7 +5,7 @@ interface Props {
 
 export default function Headbar({ logo, name }: Props) {
   return (
-    <div className="bg-discord-black text-center min-h-8 max-h-8 text-white flex justify-center">
+    <div className="w-full bg-discord-black text-center min-h-8 max-h-8 text-white flex justify-center">
       <img
         className="h-8 w-8 object-contain"
         src={logo}

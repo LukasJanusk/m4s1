@@ -5,6 +5,7 @@ interface Props {
 }
 export default function Chatbox({ onSubmit, to }: Props) {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
   const handleCommentSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!to) return;
@@ -17,6 +18,7 @@ export default function Chatbox({ onSubmit, to }: Props) {
       target.message.value = '';
     }
   };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!to) return;
@@ -32,19 +34,22 @@ export default function Chatbox({ onSubmit, to }: Props) {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   });
+
   return (
     <form
       onSubmit={handleCommentSubmit}
-      className="relative bg-discord-dark border border-discord-dark rounded-2xl p-2 m-4 min-h-20 flex items-center"
+      className={`
+        relative bg-discord-dark border border-discord-dark rounded-2xl p-2 m-4 min-h-20 flex items-center`}
     >
       <textarea
         ref={textAreaRef}
         name="message"
-        className="bg-transparent w-full text-white outline-none focus:outline-none focus:ring-0 pr-10 resize-none overflow-y-auto"
+        className={`
+          bg-transparent w-full text-white outline-none focus:outline-none focus:ring-0 pr-10 resize-none overflow-y-auto`}
         rows={3}
       />
       <button
-        className="absolute right-0 top-0 h-full w-12 hover:bg-discord-dark-gray px-2 py-1 rounded rounded-r-2xl hover:text-discord-white"
+        className={`absolute right-0 top-0 h-full w-12 hover:bg-discord-dark-gray px-2 py-1 rounded rounded-r-2xl hover:text-discord-white`}
         type="submit"
       >
         {'→'}

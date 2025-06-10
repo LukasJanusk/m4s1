@@ -19,6 +19,19 @@ export default function Widgets({
   handleServerLeave,
 }: Props) {
   const [optionsOpen, setOptionsOpen] = useState(false);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setOptionsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const setHeadphonesOn = () =>
     setSettings((prev: Settings) => ({
       ...prev,
@@ -35,16 +48,6 @@ export default function Widgets({
       showSystemMessages: !prev.showSystemMessages,
     }));
   };
-  const modalRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        setOptionsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const baseOptionsModalStyles = `flex flex-col absolute bottom-24 bg-discord-darker border-1 min-h-20 min-w-50 border-discord-dark-gray rounded-2xl h-fit z-1 items-center justify-center gap-4 p-2`;
   const modalStyles = classNames(

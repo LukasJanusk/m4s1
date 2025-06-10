@@ -46,7 +46,7 @@ export default function Chatroom({
     document.addEventListener('keydown', handleKeyDown);
 
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [channel?.name, sendMessage]);
+  }, [channel, sendMessage]);
 
   const messageReceiver = () => {
     if (isDm && channel && 'participants' in channel) {

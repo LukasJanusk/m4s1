@@ -5,7 +5,6 @@ interface Props {
 }
 export default function Chatbox({ onSubmit, to }: Props) {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
   const handleCommentSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!to) return;
